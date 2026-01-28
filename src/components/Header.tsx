@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { InteractiveLogo } from './InteractiveLogo';
 import { Menu, X } from 'lucide-react';
+import saviaLogo from '../assets/savia-logo.svg';
 
 const navLinks = [
   { label: 'Problem', href: '#problem' },
@@ -51,10 +51,7 @@ export function Header() {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
             >
-              <InteractiveLogo size={48} />
-              <span className="text-xl font-bold text-white font-['Outfit'] tracking-wide">
-                SAVIA
-              </span>
+              <img src={saviaLogo} alt="SAVIA" className="h-10 w-auto" />
             </a>
 
             {/* Desktop Navigation */}
