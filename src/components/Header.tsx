@@ -12,11 +12,14 @@ const navLinks = [
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isPastHero, setIsPastHero] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
+      setIsPastHero(window.scrollY > window.innerHeight * 0.8);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -38,7 +41,13 @@ export function Header() {
           isScrolled
             ? 'bg-[#05080f]/90 backdrop-blur-lg border-b border-white/5'
             : 'bg-transparent'
+        } ${
+          isPastHero && !isHovered
+            ? 'opacity-40 translate-y-[-5px]'
+            : 'opacity-100 translate-y-0'
         }`}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">

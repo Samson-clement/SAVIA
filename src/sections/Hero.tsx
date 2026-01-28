@@ -489,7 +489,7 @@ export function Hero() {
               y2={eyeCenter.y}
               stroke="#00e5ff"
               strokeWidth="1"
-              opacity="0.15"
+              opacity="0.4"
               strokeDasharray="4 4"
             />
           </svg>

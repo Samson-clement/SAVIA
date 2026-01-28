@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import { AlertTriangle, Camera, Clock, Users } from 'lucide-react';
+import { AlertTriangle, Brain, Eye, Timer, TrendingDown, User, Zap } from 'lucide-react';
 
 interface CounterProps {
   end: number;
   suffix?: string;
   prefix?: string;
   duration?: number;
+  decimals?: number;
 }
 
-function Counter({ end, suffix = '', prefix = '', duration = 2000 }: CounterProps) {
+function Counter({ end, suffix = '', prefix = '', duration = 2000, decimals = 0 }: CounterProps) {
   const [count, setCount] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
@@ -39,12 +40,11 @@ function Counter({ end, suffix = '', prefix = '', duration = 2000 }: CounterProp
     const animate = (currentTime: number) => {
       if (!startTime) startTime = currentTime;
       const progress = Math.min((currentTime - startTime) / duration, 1);
-      
-      // Easing function for smooth animation
+
       const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-      const currentValue = Math.floor(startValue + (end - startValue) * easeOutQuart);
-      
-      setCount(currentValue);
+      const currentValue = startValue + (end - startValue) * easeOutQuart;
+
+      setCount(decimals > 0 ? parseFloat(currentValue.toFixed(decimals)) : Math.floor(currentValue));
 
       if (progress < 1) {
         requestAnimationFrame(animate);
@@ -52,11 +52,11 @@ function Counter({ end, suffix = '', prefix = '', duration = 2000 }: CounterProp
     };
 
     requestAnimationFrame(animate);
-  }, [isVisible, end, duration]);
+  }, [isVisible, end, duration, decimals]);
 
   return (
     <span ref={ref} className="counter">
-      {prefix}{count.toLocaleString()}{suffix}
+      {prefix}{decimals > 0 ? count.toFixed(decimals) : count.toLocaleString()}{suffix}
     </span>
   );
 }
@@ -72,7 +72,7 @@ export function Problem() {
           setIsVisible(true);
         }
       },
-      { threshold: 0.2 }
+      { threshold: 0.1 }
     );
 
     if (sectionRef.current) {
@@ -82,21 +82,63 @@ export function Problem() {
     return () => observer.disconnect();
   }, []);
 
-  const stats = [
-    { icon: Camera, value: 400, suffix: '+', label: 'Cameras' },
-    { icon: Clock, value: 34.5, suffix: 'M', label: 'Seconds Daily' },
-    { icon: Users, value: 0, suffix: '%', label: 'Manual Coverage' },
+  const humanLimitations = [
+    {
+      icon: Eye,
+      stat: '22',
+      unit: 'min',
+      label: 'Attention Span',
+      detail: 'Before 95% focus loss',
+    },
+    {
+      icon: Timer,
+      stat: '4-6',
+      unit: '',
+      label: 'Cameras Max',
+      detail: 'Effective monitoring limit',
+    },
+    {
+      icon: TrendingDown,
+      stat: '45',
+      unit: '%',
+      label: 'Miss Rate',
+      detail: 'Critical incidents missed',
+    },
+  ];
+
+  const aiCapabilities = [
+    {
+      icon: Zap,
+      stat: '24/7',
+      unit: '',
+      label: 'Always On',
+      detail: 'Zero fatigue, zero breaks',
+    },
+    {
+      icon: Brain,
+      stat: '400',
+      unit: '+',
+      label: 'Cameras',
+      detail: 'Simultaneous analysis',
+    },
+    {
+      icon: Eye,
+      stat: '99.9',
+      unit: '%',
+      label: 'Detection',
+      detail: 'Accuracy rate',
+    },
   ];
 
   return (
-    <section 
+    <section
       ref={sectionRef}
-      id="problem" 
+      id="problem"
       className="relative py-24 md:py-32 overflow-hidden"
     >
       {/* Background Effects */}
       <div className="absolute inset-0 grid-bg opacity-30" />
-      
+
       {/* Falling data particles effect */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(20)].map((_, i) => (
@@ -115,103 +157,172 @@ export function Problem() {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Left Content */}
-          <div 
-            className={`transition-all duration-1000 ${
+        {/* Section Header */}
+        <div
+          className={`text-center mb-16 transition-all duration-1000 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}
+        >
+          <p className="section-label mb-4">The Reality</p>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white font-['Outfit'] mb-6">
+            Your Security Team Is<br />
+            <span className="text-[#00e5ff]">Set Up to Fail</span>
+          </h2>
+          <p className="text-lg text-[#94a3b8] max-w-3xl mx-auto">
+            It's not about effort. It's about biology. Humans weren't designed to stare at screens
+            for hours. The math simply doesn't work.
+          </p>
+        </div>
+
+        {/* The Math Problem */}
+        <div
+          className={`glass-card p-8 rounded-2xl mb-16 transition-all duration-1000 delay-200 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}
+        >
+          <div className="grid md:grid-cols-3 gap-8 text-center">
+            <div>
+              <div className="text-5xl md:text-6xl font-bold text-white font-mono mb-2">
+                <Counter end={400} suffix="+" />
+              </div>
+              <div className="text-[#94a3b8]">Cameras in typical enterprise</div>
+            </div>
+            <div>
+              <div className="text-5xl md:text-6xl font-bold text-white font-mono mb-2">
+                <Counter end={86400} />
+              </div>
+              <div className="text-[#94a3b8]">Seconds per camera, per day</div>
+            </div>
+            <div>
+              <div className="text-5xl md:text-6xl font-bold text-[#ff6b6b] font-mono mb-2">
+                <Counter end={34.5} decimals={1} suffix="M" />
+              </div>
+              <div className="text-[#94a3b8]">Total seconds to monitor daily</div>
+            </div>
+          </div>
+          <div className="mt-8 pt-8 border-t border-white/10 text-center">
+            <p className="text-xl text-white">
+              That's <span className="text-[#ff6b6b] font-bold">400 years</span> of footage generated every single day.
+            </p>
+            <p className="text-[#94a3b8] mt-2">Your team has 24 hours.</p>
+          </div>
+        </div>
+
+        {/* Human vs AI Comparison */}
+        <div className="grid lg:grid-cols-2 gap-8 mb-16">
+          {/* Human Side */}
+          <div
+            className={`transition-all duration-1000 delay-300 ${
               isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
             }`}
           >
-            <p className="section-label mb-4">The Reality</p>
-            <h2 className="text-4xl md:text-5xl font-bold text-white font-['Outfit'] mb-6">
-              Your Security Team Is{' '}
-              <span className="text-[#00e5ff]">Set Up to Fail</span>
-            </h2>
-            <p className="text-lg text-[#94a3b8] leading-relaxed mb-8">
-              A typical enterprise deployment runs 400+ cameras generating 34.5 million seconds 
-              of footage daily. Your team physically cannot watch it all. Incidents happen. 
-              Evidence gets buried. Threats go unnoticed. Manual monitoring isn't just 
-              expensive — it's <span className="text-white font-semibold">impossible</span>.
-            </p>
-
-            {/* Alert Box */}
-            <div className="glass-card p-6 rounded-xl border-l-4 border-l-[#f59e0b]">
-              <div className="flex items-start gap-4">
-                <AlertTriangle className="text-[#f59e0b] flex-shrink-0 mt-1" size={24} />
-                <div>
-                  <h4 className="text-white font-semibold mb-2">The Hard Truth</h4>
-                  <p className="text-[#94a3b8] text-sm">
-                    Studies show that security operators lose 95% of their visual attention 
-                    within just 22 minutes of continuous monitoring.
-                  </p>
-                </div>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-full bg-[#ff6b6b]/20 flex items-center justify-center">
+                <User className="text-[#ff6b6b]" size={24} />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-white">Human Operators</h3>
+                <p className="text-[#ff6b6b] text-sm font-mono">LIMITATIONS</p>
               </div>
             </div>
-          </div>
 
-          {/* Right Stats */}
-          <div 
-            className={`transition-all duration-1000 delay-300 ${
-              isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
-            }`}
-          >
-            <div className="grid gap-6">
-              {stats.map((stat, index) => (
+            <div className="space-y-4">
+              {humanLimitations.map((item, index) => (
                 <div
-                  key={stat.label}
-                  className="glass-card p-6 rounded-xl flex items-center gap-6 group hover:border-[#00e5ff]/30 transition-all"
-                  style={{ transitionDelay: `${index * 100}ms` }}
+                  key={item.label}
+                  className="glass-card p-5 rounded-xl border-l-4 border-l-[#ff6b6b]/50 hover:border-l-[#ff6b6b] transition-all group"
+                  style={{ transitionDelay: `${400 + index * 100}ms` }}
                 >
-                  <div className="w-14 h-14 rounded-xl bg-[#00e5ff]/10 flex items-center justify-center group-hover:bg-[#00e5ff]/20 transition-colors">
-                    <stat.icon className="text-[#00e5ff]" size={28} />
-                  </div>
-                  <div>
-                    <div className="text-3xl md:text-4xl font-bold text-white font-mono mb-1">
-                      {stat.value === 34.5 ? (
-                        <><Counter end={34} suffix=".5" />{stat.suffix}</>
-                      ) : stat.value === 0 ? (
-                        <span>0{stat.suffix}</span>
-                      ) : (
-                        <><Counter end={stat.value} suffix={stat.suffix} /></>
-                      )}
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-[#ff6b6b]/10 flex items-center justify-center group-hover:bg-[#ff6b6b]/20 transition-colors">
+                      <item.icon className="text-[#ff6b6b]" size={20} />
                     </div>
-                    <div className="text-[#94a3b8]">{stat.label}</div>
+                    <div className="flex-1">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-bold text-white font-mono">{item.stat}</span>
+                        <span className="text-[#ff6b6b] text-sm">{item.unit}</span>
+                        <span className="text-[#94a3b8] text-sm ml-auto">{item.label}</span>
+                      </div>
+                      <p className="text-[#64748b] text-sm">{item.detail}</p>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Camera Grid Visual */}
-            <div className="mt-8 glass-card p-4 rounded-xl">
-              <div className="grid grid-cols-4 gap-2">
-                {[...Array(16)].map((_, i) => (
-                  <div
-                    key={i}
-                    className={`aspect-video rounded bg-[#0a1018] border border-white/5 relative overflow-hidden group ${
-                      isVisible ? 'animate-assemble' : ''
-                    }`}
-                    style={{
-                      animationDelay: `${i * 50}ms`,
-                    }}
-                  >
-                    {/* Static noise effect */}
-                    <div className="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4=')]" />
-                    {/* Camera indicator */}
-                    <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[#00e5ff]/50" />
-                    {/* Crosshair */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="w-4 h-4 border border-[#00e5ff]/50 rounded-full" />
-                      <div className="absolute w-6 h-px bg-[#00e5ff]/30" />
-                      <div className="absolute h-6 w-px bg-[#00e5ff]/30" />
-                    </div>
-                  </div>
-                ))}
+            {/* Warning Box */}
+            <div className="mt-6 p-4 rounded-xl bg-[#ff6b6b]/10 border border-[#ff6b6b]/20">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="text-[#ff6b6b] flex-shrink-0 mt-0.5" size={20} />
+                <p className="text-sm text-[#94a3b8]">
+                  <span className="text-white font-semibold">Fatigue is inevitable.</span> After 20 minutes,
+                  your operators are operating at 5% visual attention capacity.
+                </p>
               </div>
-              <p className="text-center text-xs text-[#64748b] mt-3">
-                Typical enterprise camera deployment
-              </p>
             </div>
           </div>
+
+          {/* AI Side */}
+          <div
+            className={`transition-all duration-1000 delay-500 ${
+              isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
+            }`}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-full bg-[#00e5ff]/20 flex items-center justify-center">
+                <Brain className="text-[#00e5ff]" size={24} />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-white">SAVIA AI</h3>
+                <p className="text-[#00e5ff] text-sm font-mono">CAPABILITIES</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {aiCapabilities.map((item, index) => (
+                <div
+                  key={item.label}
+                  className="glass-card p-5 rounded-xl border-l-4 border-l-[#00e5ff]/50 hover:border-l-[#00e5ff] transition-all group"
+                  style={{ transitionDelay: `${600 + index * 100}ms` }}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-[#00e5ff]/10 flex items-center justify-center group-hover:bg-[#00e5ff]/20 transition-colors">
+                      <item.icon className="text-[#00e5ff]" size={20} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-bold text-white font-mono">{item.stat}</span>
+                        <span className="text-[#00e5ff] text-sm">{item.unit}</span>
+                        <span className="text-[#94a3b8] text-sm ml-auto">{item.label}</span>
+                      </div>
+                      <p className="text-[#64748b] text-sm">{item.detail}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Success Box */}
+            <div className="mt-6 p-4 rounded-xl bg-[#00e5ff]/10 border border-[#00e5ff]/20">
+              <div className="flex items-start gap-3">
+                <Zap className="text-[#00e5ff] flex-shrink-0 mt-0.5" size={20} />
+                <p className="text-sm text-[#94a3b8]">
+                  <span className="text-white font-semibold">Never misses. Never sleeps.</span> SAVIA
+                  processes every frame with consistent precision, 24/7/365.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom CTA */}
+        <div
+          className={`text-center transition-all duration-1000 delay-700 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}
+        >
+          <p className="text-xl text-white mb-2">The question isn't whether your team is good enough.</p>
+          <p className="text-2xl font-bold text-[#00e5ff]">It's whether they're even possible.</p>
         </div>
       </div>
 
@@ -224,13 +335,6 @@ export function Problem() {
         }
         .animate-fall {
           animation: fall linear infinite;
-        }
-        @keyframes assemble {
-          0% { transform: scale(0.8) rotate(${Math.random() * 10 - 5}deg); opacity: 0; }
-          100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-        .animate-assemble {
-          animation: assemble 0.5s ease-out forwards;
         }
       `}</style>
     </section>
