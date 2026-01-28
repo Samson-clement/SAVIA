@@ -181,7 +181,7 @@ export function Hero() {
           so critical incidents never slip through again.
         </p>
 
-        {/* Interactive Eye */}
+        {/* Interactive High-Tech Eye */}
         <div
           className={`flex items-center justify-center mb-16 transition-all duration-700 delay-1000 ${
             isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
@@ -190,48 +190,152 @@ export function Hero() {
           <div
             ref={eyeRef}
             onClick={() => scrollToSection('#problem')}
-            className="relative w-20 h-12 cursor-pointer group"
+            className="relative w-28 h-20 cursor-pointer group"
           >
             <svg
-              viewBox="0 0 80 48"
+              viewBox="0 0 100 70"
               className="w-full h-full"
             >
-              {/* Eye shape */}
+              <defs>
+                <linearGradient id="eyeGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#00e5ff" stopOpacity="0.4" />
+                  <stop offset="100%" stopColor="#00e5ff" stopOpacity="0.1" />
+                </linearGradient>
+              </defs>
+
+              {/* Outer scanning ring - animated */}
+              <circle
+                cx="50"
+                cy="35"
+                r="30"
+                fill="none"
+                stroke="#00e5ff"
+                strokeWidth="0.5"
+                strokeDasharray="4 8"
+                opacity="0.4"
+                className="origin-center animate-[spin_8s_linear_infinite]"
+                style={{ transformOrigin: '50px 35px' }}
+              />
+
+              {/* Eye shape outer glow */}
               <path
-                d="M40 4 C15 4 2 24 2 24 C2 24 15 44 40 44 C65 44 78 24 78 24 C78 24 65 4 40 4 Z"
+                d="M50 8 C20 8 4 35 4 35 C4 35 20 62 50 62 C80 62 96 35 96 35 C96 35 80 8 50 8 Z"
+                fill="url(#eyeGlow)"
+                opacity="0.3"
+              />
+
+              {/* Eye shape main */}
+              <path
+                d="M50 10 C22 10 6 35 6 35 C6 35 22 60 50 60 C78 60 94 35 94 35 C94 35 78 10 50 10 Z"
+                fill="none"
+                stroke="#00e5ff"
+                strokeWidth="1.5"
+                className="group-hover:stroke-[#00ffff] transition-colors duration-300"
+              />
+
+              {/* Inner eye shape */}
+              <path
+                d="M50 16 C28 16 14 35 14 35 C14 35 28 54 50 54 C72 54 86 35 86 35 C86 35 72 16 50 16 Z"
+                fill="none"
+                stroke="#00e5ff"
+                strokeWidth="0.5"
+                opacity="0.5"
+              />
+
+              {/* Tech circle outer */}
+              <circle
+                cx="50"
+                cy="35"
+                r="18"
+                fill="none"
+                stroke="#00e5ff"
+                strokeWidth="1"
+                strokeDasharray="2 4 8 4"
+                opacity="0.6"
+              />
+
+              {/* Iris outer ring */}
+              <circle
+                cx={50 + eyePosition.x}
+                cy={35 + eyePosition.y}
+                r="14"
                 fill="none"
                 stroke="#00e5ff"
                 strokeWidth="2"
-                className="group-hover:stroke-[#00ffff] transition-colors duration-300"
+                opacity="0.8"
               />
-              {/* Iris */}
+
+              {/* Iris segments */}
+              {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
+                <line
+                  key={angle}
+                  x1={50 + eyePosition.x + Math.cos((angle * Math.PI) / 180) * 8}
+                  y1={35 + eyePosition.y + Math.sin((angle * Math.PI) / 180) * 8}
+                  x2={50 + eyePosition.x + Math.cos((angle * Math.PI) / 180) * 13}
+                  y2={35 + eyePosition.y + Math.sin((angle * Math.PI) / 180) * 13}
+                  stroke="#00e5ff"
+                  strokeWidth="1"
+                  opacity="0.5"
+                />
+              ))}
+
+              {/* Iris inner glow */}
               <circle
-                cx={40 + eyePosition.x}
-                cy={24 + eyePosition.y}
-                r="14"
+                cx={50 + eyePosition.x}
+                cy={35 + eyePosition.y}
+                r="10"
                 fill="#00e5ff"
-                opacity="0.2"
-                className="group-hover:opacity-30 transition-opacity duration-300"
+                opacity="0.15"
+                className="group-hover:opacity-25 transition-opacity duration-300"
               />
-              {/* Pupil */}
+
+              {/* Pupil outer */}
               <circle
-                cx={40 + eyePosition.x}
-                cy={24 + eyePosition.y}
+                cx={50 + eyePosition.x}
+                cy={35 + eyePosition.y}
                 r="6"
+                fill="#05080f"
+                stroke="#00e5ff"
+                strokeWidth="1"
+              />
+
+              {/* Pupil core */}
+              <circle
+                cx={50 + eyePosition.x}
+                cy={35 + eyePosition.y}
+                r="4"
                 fill="#00e5ff"
                 className="group-hover:fill-[#00ffff] transition-colors duration-300"
               />
+
               {/* Pupil highlight */}
               <circle
-                cx={40 + eyePosition.x - 2}
-                cy={24 + eyePosition.y - 2}
-                r="2"
+                cx={50 + eyePosition.x - 1.5}
+                cy={35 + eyePosition.y - 1.5}
+                r="1.5"
                 fill="#ffffff"
-                opacity="0.8"
+              />
+
+              {/* Corner tech markers */}
+              <path d="M8 15 L8 10 L13 10" stroke="#00e5ff" strokeWidth="1" fill="none" opacity="0.6" />
+              <path d="M92 15 L92 10 L87 10" stroke="#00e5ff" strokeWidth="1" fill="none" opacity="0.6" />
+              <path d="M8 55 L8 60 L13 60" stroke="#00e5ff" strokeWidth="1" fill="none" opacity="0.6" />
+              <path d="M92 55 L92 60 L87 60" stroke="#00e5ff" strokeWidth="1" fill="none" opacity="0.6" />
+
+              {/* Scanning line */}
+              <line
+                x1="20"
+                y1="35"
+                x2="80"
+                y2="35"
+                stroke="#00e5ff"
+                strokeWidth="0.5"
+                opacity="0.3"
+                strokeDasharray="1 3"
               />
             </svg>
             {/* Glow effect */}
-            <div className="absolute inset-0 bg-[#00e5ff]/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full" />
+            <div className="absolute inset-0 bg-[#00e5ff]/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full" />
           </div>
         </div>
 
