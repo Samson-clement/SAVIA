@@ -18,6 +18,7 @@ export function Hero() {
   const [eyePosition, setEyePosition] = useState({ x: 0, y: 0 });
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [eyeCenter, setEyeCenter] = useState({ x: 0, y: 0 });
+  const [isPastHero, setIsPastHero] = useState(false);
   const [mouseData, setMouseData] = useState<MouseData>({
     zone: 'INITIALIZING',
     speed: 'CALIBRATING',
@@ -27,6 +28,7 @@ export function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const lineRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const eyeRef = useRef<HTMLDivElement>(null);
+  const fixedEyeRef = useRef<HTMLDivElement>(null);
   const lastMousePos = useRef({ x: 0, y: 0, time: Date.now() });
   const actionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -35,6 +37,28 @@ export function Hero() {
     const timer = setTimeout(() => setIsLoaded(true), 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // Track scroll position to move eye to corner
+  useEffect(() => {
+    const handleScroll = () => {
+      const heroHeight = window.innerHeight;
+      setIsPastHero(window.scrollY > heroHeight * 0.7);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Update fixed eye center for the tracking line when in corner mode
+  useEffect(() => {
+    if (isPastHero && fixedEyeRef.current) {
+      const eye = fixedEyeRef.current.getBoundingClientRect();
+      setEyeCenter({
+        x: eye.left + eye.width / 2,
+        y: eye.top + eye.height / 2,
+      });
+    }
+  }, [isPastHero, cursorPos]);
 
   // Text decode animation for each headline line
   useEffect(() => {
@@ -80,9 +104,11 @@ export function Hero() {
   // Eye tracking effect with mouse data
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (!eyeRef.current) return;
+      // Use fixed eye ref if scrolled past hero, otherwise use main eye ref
+      const activeEyeRef = window.scrollY > window.innerHeight * 0.7 ? fixedEyeRef : eyeRef;
+      if (!activeEyeRef.current) return;
 
-      const eye = eyeRef.current.getBoundingClientRect();
+      const eye = activeEyeRef.current.getBoundingClientRect();
       const eyeCenterX = eye.left + eye.width / 2;
       const eyeCenterY = eye.top + eye.height / 2;
 
@@ -160,9 +186,10 @@ export function Hero() {
     };
 
     const handleScroll = () => {
-      // Update eye center position on scroll
-      if (eyeRef.current) {
-        const eye = eyeRef.current.getBoundingClientRect();
+      // Update eye center position on scroll - use appropriate ref
+      const activeEyeRef = window.scrollY > window.innerHeight * 0.7 ? fixedEyeRef : eyeRef;
+      if (activeEyeRef.current) {
+        const eye = activeEyeRef.current.getBoundingClientRect();
         setEyeCenter({
           x: eye.left + eye.width / 2,
           y: eye.top + eye.height / 2,
@@ -299,7 +326,7 @@ export function Hero() {
         <div
           className={`flex flex-col items-center justify-center mb-16 transition-all duration-700 delay-1000 ${
             isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-          }`}
+          } ${isPastHero ? 'opacity-0 pointer-events-none' : ''}`}
         >
           <div
             ref={eyeRef}
@@ -539,6 +566,151 @@ export function Hero() {
           </div>
         </>
       )}
+
+      {/* Fixed Eye in Bottom Right Corner - appears when scrolled past hero */}
+      <div
+        ref={fixedEyeRef}
+        className={`fixed bottom-6 right-6 z-50 transition-all duration-700 ease-out ${
+          isPastHero
+            ? 'opacity-100 translate-x-0 translate-y-0 scale-100'
+            : 'opacity-0 translate-x-12 translate-y-12 scale-75'
+        }`}
+      >
+        <div className="relative w-20 h-14 group">
+          <svg viewBox="0 0 100 70" className="w-full h-full">
+            <defs>
+              <linearGradient id="eyeGlowFixed" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#00e5ff" stopOpacity="0.4" />
+                <stop offset="100%" stopColor="#00e5ff" stopOpacity="0.1" />
+              </linearGradient>
+            </defs>
+
+            {/* Outer scanning ring */}
+            <circle
+              cx="50"
+              cy="35"
+              r="30"
+              fill="none"
+              stroke="#00e5ff"
+              strokeWidth="0.5"
+              strokeDasharray="4 8"
+              opacity="0.4"
+              className="origin-center animate-[spin_8s_linear_infinite]"
+              style={{ transformOrigin: '50px 35px' }}
+            />
+
+            {/* Eye shape outer glow */}
+            <path
+              d="M50 8 C20 8 4 35 4 35 C4 35 20 62 50 62 C80 62 96 35 96 35 C96 35 80 8 50 8 Z"
+              fill="url(#eyeGlowFixed)"
+              opacity="0.3"
+            />
+
+            {/* Eye shape main */}
+            <path
+              d="M50 10 C22 10 6 35 6 35 C6 35 22 60 50 60 C78 60 94 35 94 35 C94 35 78 10 50 10 Z"
+              fill="none"
+              stroke="#00e5ff"
+              strokeWidth="1.5"
+            />
+
+            {/* Inner eye shape */}
+            <path
+              d="M50 16 C28 16 14 35 14 35 C14 35 28 54 50 54 C72 54 86 35 86 35 C86 35 72 16 50 16 Z"
+              fill="none"
+              stroke="#00e5ff"
+              strokeWidth="0.5"
+              opacity="0.5"
+            />
+
+            {/* Tech circle outer */}
+            <circle
+              cx="50"
+              cy="35"
+              r="18"
+              fill="none"
+              stroke="#00e5ff"
+              strokeWidth="1"
+              strokeDasharray="2 4 8 4"
+              opacity="0.6"
+            />
+
+            {/* Iris outer ring */}
+            <circle
+              cx={50 + eyePosition.x}
+              cy={35 + eyePosition.y}
+              r="14"
+              fill="none"
+              stroke="#00e5ff"
+              strokeWidth="2"
+              opacity="0.8"
+            />
+
+            {/* Iris segments */}
+            {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
+              <line
+                key={angle}
+                x1={50 + eyePosition.x + Math.cos((angle * Math.PI) / 180) * 8}
+                y1={35 + eyePosition.y + Math.sin((angle * Math.PI) / 180) * 8}
+                x2={50 + eyePosition.x + Math.cos((angle * Math.PI) / 180) * 13}
+                y2={35 + eyePosition.y + Math.sin((angle * Math.PI) / 180) * 13}
+                stroke="#00e5ff"
+                strokeWidth="1"
+                opacity="0.5"
+              />
+            ))}
+
+            {/* Iris inner glow */}
+            <circle
+              cx={50 + eyePosition.x}
+              cy={35 + eyePosition.y}
+              r="10"
+              fill="#00e5ff"
+              opacity="0.15"
+            />
+
+            {/* Pupil outer */}
+            <circle
+              cx={50 + eyePosition.x}
+              cy={35 + eyePosition.y}
+              r="6"
+              fill="#05080f"
+              stroke="#00e5ff"
+              strokeWidth="1"
+            />
+
+            {/* Pupil core */}
+            <circle
+              cx={50 + eyePosition.x}
+              cy={35 + eyePosition.y}
+              r="4"
+              fill="#00e5ff"
+            />
+
+            {/* Pupil highlight */}
+            <circle
+              cx={50 + eyePosition.x - 1.5}
+              cy={35 + eyePosition.y - 1.5}
+              r="1.5"
+              fill="#ffffff"
+            />
+
+            {/* Corner tech markers */}
+            <path d="M8 15 L8 10 L13 10" stroke="#00e5ff" strokeWidth="1" fill="none" opacity="0.6" />
+            <path d="M92 15 L92 10 L87 10" stroke="#00e5ff" strokeWidth="1" fill="none" opacity="0.6" />
+            <path d="M8 55 L8 60 L13 60" stroke="#00e5ff" strokeWidth="1" fill="none" opacity="0.6" />
+            <path d="M92 55 L92 60 L87 60" stroke="#00e5ff" strokeWidth="1" fill="none" opacity="0.6" />
+          </svg>
+
+          {/* Glow effect behind */}
+          <div className="absolute inset-0 bg-[#00e5ff]/10 blur-xl rounded-full" />
+
+          {/* Mini tracking data */}
+          <div className="absolute -top-5 left-0 right-0 font-mono text-[8px] text-[#00e5ff]/50 text-center">
+            SAVIA ACTIVE
+          </div>
+        </div>
+      </div>
     </section>
   );
 }

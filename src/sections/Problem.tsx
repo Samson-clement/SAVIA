@@ -182,13 +182,13 @@ export function Problem() {
         >
           <div className="grid md:grid-cols-3 gap-8 text-center">
             <div>
-              <div className="text-5xl md:text-6xl font-bold text-white font-mono mb-2">
+              <div className="text-5xl md:text-6xl font-bold text-[#ff6b6b] font-mono mb-2">
                 <Counter end={400} suffix="+" />
               </div>
               <div className="text-[#94a3b8]">Cameras in typical enterprise</div>
             </div>
             <div>
-              <div className="text-5xl md:text-6xl font-bold text-white font-mono mb-2">
+              <div className="text-5xl md:text-6xl font-bold text-[#ff6b6b] font-mono mb-2">
                 <Counter end={86400} />
               </div>
               <div className="text-[#94a3b8]">Seconds per camera, per day</div>
@@ -204,7 +204,7 @@ export function Problem() {
             <p className="text-xl text-white">
               That's <span className="text-[#ff6b6b] font-bold">400 years</span> of footage generated every single day.
             </p>
-            <p className="text-[#94a3b8] mt-2">Your team has 24 hours.</p>
+            <p className="text-[#94a3b8] mt-2">Your team only has 24 hours.</p>
           </div>
         </div>
 
