@@ -16,6 +16,8 @@ interface MouseData {
 export function Hero() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [eyePosition, setEyePosition] = useState({ x: 0, y: 0 });
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [eyeCenter, setEyeCenter] = useState({ x: 0, y: 0 });
   const [mouseData, setMouseData] = useState<MouseData>({
     zone: 'INITIALIZING',
     speed: 'CALIBRATING',
@@ -95,6 +97,10 @@ export function Hero() {
         y: Math.sin(angle) * distance,
       });
 
+      // Update cursor and eye center positions for the tracking line
+      setCursorPos({ x: e.clientX, y: e.clientY });
+      setEyeCenter({ x: eyeCenterX, y: eyeCenterY });
+
       // Calculate speed
       const now = Date.now();
       const timeDelta = now - lastMousePos.current.time;
@@ -154,6 +160,15 @@ export function Hero() {
     };
 
     const handleScroll = () => {
+      // Update eye center position on scroll
+      if (eyeRef.current) {
+        const eye = eyeRef.current.getBoundingClientRect();
+        setEyeCenter({
+          x: eye.left + eye.width / 2,
+          y: eye.top + eye.height / 2,
+        });
+      }
+
       setMouseData(prev => ({ ...prev, action: 'SCROLLING' }));
       if (actionTimeoutRef.current) clearTimeout(actionTimeoutRef.current);
       actionTimeoutRef.current = setTimeout(() => {
@@ -458,6 +473,72 @@ export function Hero() {
 
       {/* Bottom gradient fade */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#05080f] to-transparent z-10" />
+
+      {/* Cursor Tracker with connecting line to eye */}
+      {isLoaded && (
+        <>
+          {/* SVG line connecting cursor to eye */}
+          <svg
+            className="fixed inset-0 w-full h-full pointer-events-none z-50"
+            style={{ mixBlendMode: 'screen' }}
+          >
+            <line
+              x1={cursorPos.x}
+              y1={cursorPos.y}
+              x2={eyeCenter.x}
+              y2={eyeCenter.y}
+              stroke="#00e5ff"
+              strokeWidth="1"
+              opacity="0.15"
+              strokeDasharray="4 4"
+            />
+          </svg>
+
+          {/* Tracking square around cursor */}
+          <div
+            className="fixed pointer-events-none z-50 transition-transform duration-75"
+            style={{
+              left: cursorPos.x - 20,
+              top: cursorPos.y - 20,
+            }}
+          >
+            <svg width="40" height="40" viewBox="0 0 40 40">
+              {/* Corner brackets */}
+              <path
+                d="M0 10 L0 0 L10 0"
+                fill="none"
+                stroke="#00e5ff"
+                strokeWidth="1.5"
+                opacity="0.6"
+              />
+              <path
+                d="M30 0 L40 0 L40 10"
+                fill="none"
+                stroke="#00e5ff"
+                strokeWidth="1.5"
+                opacity="0.6"
+              />
+              <path
+                d="M40 30 L40 40 L30 40"
+                fill="none"
+                stroke="#00e5ff"
+                strokeWidth="1.5"
+                opacity="0.6"
+              />
+              <path
+                d="M10 40 L0 40 L0 30"
+                fill="none"
+                stroke="#00e5ff"
+                strokeWidth="1.5"
+                opacity="0.6"
+              />
+              {/* Center crosshair */}
+              <line x1="20" y1="16" x2="20" y2="24" stroke="#00e5ff" strokeWidth="1" opacity="0.4" />
+              <line x1="16" y1="20" x2="24" y2="20" stroke="#00e5ff" strokeWidth="1" opacity="0.4" />
+            </svg>
+          </div>
+        </>
+      )}
     </section>
   );
 }
