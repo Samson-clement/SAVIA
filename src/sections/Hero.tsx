@@ -6,12 +6,27 @@ const headlineLines = [
   { text: 'No Human Can Keep Up.', highlight: true },
 ];
 
+interface MouseData {
+  zone: string;
+  speed: string;
+  action: string;
+  coords: string;
+}
+
 export function Hero() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [eyePosition, setEyePosition] = useState({ x: 0, y: 0 });
+  const [mouseData, setMouseData] = useState<MouseData>({
+    zone: 'INITIALIZING',
+    speed: 'CALIBRATING',
+    action: 'STANDBY',
+    coords: '0000:0000',
+  });
   const videoRef = useRef<HTMLVideoElement>(null);
   const lineRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const eyeRef = useRef<HTMLDivElement>(null);
+  const lastMousePos = useRef({ x: 0, y: 0, time: Date.now() });
+  const actionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Trigger entrance animations
@@ -60,7 +75,7 @@ export function Hero() {
     });
   }, [isLoaded]);
 
-  // Eye tracking effect
+  // Eye tracking effect with mouse data
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!eyeRef.current) return;
@@ -79,10 +94,92 @@ export function Hero() {
         x: Math.cos(angle) * distance,
         y: Math.sin(angle) * distance,
       });
+
+      // Calculate speed
+      const now = Date.now();
+      const timeDelta = now - lastMousePos.current.time;
+      const distanceMoved = Math.hypot(
+        e.clientX - lastMousePos.current.x,
+        e.clientY - lastMousePos.current.y
+      );
+      const speed = timeDelta > 0 ? distanceMoved / timeDelta : 0;
+
+      // Determine zone
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      let horizontalZone = 'CENTER';
+      let verticalZone = 'MID';
+
+      if (e.clientX < screenWidth * 0.33) horizontalZone = 'LEFT';
+      else if (e.clientX > screenWidth * 0.66) horizontalZone = 'RIGHT';
+
+      if (e.clientY < screenHeight * 0.33) verticalZone = 'UPPER';
+      else if (e.clientY > screenHeight * 0.66) verticalZone = 'LOWER';
+
+      // Determine speed category
+      let speedCategory = 'IDLE';
+      if (speed > 2) speedCategory = 'RAPID';
+      else if (speed > 0.8) speedCategory = 'FAST';
+      else if (speed > 0.3) speedCategory = 'MODERATE';
+      else if (speed > 0.05) speedCategory = 'SLOW';
+
+      setMouseData(prev => ({
+        ...prev,
+        zone: `${verticalZone}-${horizontalZone}`,
+        speed: speedCategory,
+        coords: `${String(Math.floor(e.clientX)).padStart(4, '0')}:${String(Math.floor(e.clientY)).padStart(4, '0')}`,
+      }));
+
+      lastMousePos.current = { x: e.clientX, y: e.clientY, time: now };
     };
 
+    const handleClick = () => {
+      setMouseData(prev => ({ ...prev, action: 'CLICK_DETECTED' }));
+      if (actionTimeoutRef.current) clearTimeout(actionTimeoutRef.current);
+      actionTimeoutRef.current = setTimeout(() => {
+        setMouseData(prev => ({ ...prev, action: 'TRACKING' }));
+      }, 800);
+    };
+
+    const handleMouseDown = () => {
+      setMouseData(prev => ({ ...prev, action: 'PRESSING' }));
+    };
+
+    const handleMouseUp = () => {
+      setMouseData(prev => ({ ...prev, action: 'RELEASED' }));
+      if (actionTimeoutRef.current) clearTimeout(actionTimeoutRef.current);
+      actionTimeoutRef.current = setTimeout(() => {
+        setMouseData(prev => ({ ...prev, action: 'TRACKING' }));
+      }, 500);
+    };
+
+    const handleScroll = () => {
+      setMouseData(prev => ({ ...prev, action: 'SCROLLING' }));
+      if (actionTimeoutRef.current) clearTimeout(actionTimeoutRef.current);
+      actionTimeoutRef.current = setTimeout(() => {
+        setMouseData(prev => ({ ...prev, action: 'TRACKING' }));
+      }, 300);
+    };
+
+    // Initialize
+    setTimeout(() => {
+      setMouseData(prev => ({ ...prev, action: 'TRACKING', zone: 'SCANNING', speed: 'READY' }));
+    }, 500);
+
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('click', handleClick);
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('click', handleClick);
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('scroll', handleScroll);
+      if (actionTimeoutRef.current) clearTimeout(actionTimeoutRef.current);
+    };
   }, []);
 
   const scrollToSection = (href: string) => {
@@ -143,7 +240,7 @@ export function Hero() {
       </div>
 
       {/* Content */}
-      <div className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20">
+      <div className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-32 md:pt-40">
         {/* Pre-headline */}
         <p 
           className={`section-label mb-6 transition-all duration-700 delay-500 ${
@@ -172,18 +269,20 @@ export function Hero() {
         </h1>
 
         {/* Subheadline */}
-        <p 
-          className={`text-lg sm:text-xl text-[#94a3b8] max-w-3xl mx-auto mb-10 transition-all duration-700 delay-900 ${
+        <p
+          className={`text-lg sm:text-xl text-white/90 max-w-3xl mx-auto mb-10 transition-all duration-700 delay-900 leading-relaxed ${
             isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}
         >
-          SAVIA is AI-powered video intelligence that monitors every camera, every second — 
-          so critical incidents never slip through again.
+          <span className="text-[#00e5ff] font-semibold">SAVIA</span> is AI-powered video intelligence that monitors{' '}
+          <span className="text-[#00e5ff]">every camera</span>,{' '}
+          <span className="text-[#00e5ff]">every second</span> —{' '}
+          so critical incidents <span className="underline decoration-[#00e5ff]/50 underline-offset-4">never slip through again</span>.
         </p>
 
         {/* Interactive High-Tech Eye */}
         <div
-          className={`flex items-center justify-center mb-16 transition-all duration-700 delay-1000 ${
+          className={`flex flex-col items-center justify-center mb-16 transition-all duration-700 delay-1000 ${
             isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}
         >
@@ -337,27 +436,24 @@ export function Hero() {
             {/* Glow effect */}
             <div className="absolute inset-0 bg-[#00e5ff]/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full" />
           </div>
+
+          {/* Matrix-style mouse tracking data */}
+          <div className="mt-4 font-mono text-[10px] leading-relaxed tracking-wider text-[#00e5ff]/70 select-none">
+            <div className="flex flex-col items-center gap-0.5">
+              <span className="text-[#00e5ff]/40">[SAVIA_TRACKING_v2.1]</span>
+              <div className="flex gap-4">
+                <span>ZONE:<span className="text-[#00e5ff] ml-1">{mouseData.zone}</span></span>
+                <span>VEL:<span className="text-[#00e5ff] ml-1">{mouseData.speed}</span></span>
+              </div>
+              <div className="flex gap-4">
+                <span>POS:<span className="text-[#00e5ff] ml-1">{mouseData.coords}</span></span>
+                <span>ACT:<span className={`ml-1 ${mouseData.action === 'CLICK_DETECTED' || mouseData.action === 'PRESSING' ? 'text-[#ff6b6b]' : 'text-[#00e5ff]'}`}>{mouseData.action}</span></span>
+              </div>
+              <span className="text-[#00e5ff]/30 animate-pulse">■ LIVE</span>
+            </div>
+          </div>
         </div>
 
-        {/* Floating Stats Badges */}
-        <div className="flex flex-wrap justify-center gap-4">
-          {[
-            { value: '400+', label: 'Cameras Monitored' },
-            { value: '<3s', label: 'Alert Response' },
-            { value: '75%', label: 'Cost Reduction' },
-          ].map((stat, index) => (
-            <div
-              key={stat.label}
-              className={`px-4 py-2 rounded-full border border-[#00e5ff]/20 bg-[#05080f]/40 backdrop-blur-sm
-                hover:border-[#00e5ff]/40 transition-all duration-300
-                ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
-              style={{ transitionDelay: `${1200 + index * 100}ms` }}
-            >
-              <span className="text-[#00e5ff] font-mono font-bold">{stat.value}</span>
-              <span className="text-[#94a3b8] ml-2 text-sm">{stat.label}</span>
-            </div>
-          ))}
-        </div>
       </div>
 
       {/* Bottom gradient fade */}
