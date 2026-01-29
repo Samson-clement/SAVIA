@@ -1,35 +1,40 @@
 import { useEffect, useRef, useState } from 'react';
-import { Eye, Zap, TrendingDown, Clock, CheckCircle } from 'lucide-react';
+import { Eye, Zap, TrendingDown, Clock, Shield, Brain, Cpu, Radio } from 'lucide-react';
 
-const benefits = [
+const capabilities = [
   {
     icon: Eye,
-    title: '24/7 Automated Monitoring',
-    description: 'Every camera, every second, analyzed in real-time without fatigue or distraction.',
-    color: '#00e5ff',
+    title: '24/7 Vigilance',
+    description: 'Every camera, every second, analyzed in real-time without fatigue.',
+    stat: '∞',
+    statLabel: 'Attention Span',
   },
   {
     icon: Zap,
-    title: 'Instant Alerts',
-    description: 'SMS, WhatsApp, Email, or Teams notifications — within seconds of detection.',
-    color: '#f59e0b',
+    title: 'Instant Response',
+    description: 'Alerts via SMS, WhatsApp, Email, or Teams within seconds.',
+    stat: '<3s',
+    statLabel: 'Alert Time',
   },
   {
     icon: TrendingDown,
-    title: '75% Cost Reduction',
-    description: 'Full coverage at a fraction of manual monitoring costs. Pay for AI, not headcount.',
-    color: '#22c55e',
+    title: 'Cost Efficient',
+    description: 'Full coverage at a fraction of manual monitoring costs.',
+    stat: '75%',
+    statLabel: 'Cost Reduction',
   },
   {
     icon: Clock,
-    title: 'Hours → Minutes',
-    description: 'AI summarization turns day-long reviews into minutes. Find incidents instantly.',
-    color: '#3b82f6',
+    title: 'Rapid Review',
+    description: 'AI summarization turns hours of footage into minutes.',
+    stat: '100x',
+    statLabel: 'Faster',
   },
 ];
 
 export function Solution() {
   const [isVisible, setIsVisible] = useState(false);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -39,7 +44,7 @@ export function Solution() {
           setIsVisible(true);
         }
       },
-      { threshold: 0.2 }
+      { threshold: 0.15 }
     );
 
     if (sectionRef.current) {
@@ -50,132 +55,166 @@ export function Solution() {
   }, []);
 
   return (
-    <section 
+    <section
       ref={sectionRef}
-      id="solution" 
-      className="relative py-24 md:py-32 overflow-hidden"
+      id="solution"
+      className="relative overflow-hidden"
     >
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#05080f] via-[#0a1018] to-[#05080f]" />
-      
-      {/* Animated orbital rings */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-        <div 
-          className={`w-[600px] h-[600px] rounded-full border border-[#00e5ff]/20 transition-all duration-1000 ${
-            isVisible ? 'scale-100 opacity-100' : 'scale-50 opacity-0'
-          }`}
-          style={{ animation: isVisible ? 'spin 60s linear infinite' : 'none' }}
-        />
-        <div 
-          className={`absolute w-[400px] h-[400px] rounded-full border border-[#f59e0b]/20 transition-all duration-1000 delay-200 ${
-            isVisible ? 'scale-100 opacity-100' : 'scale-50 opacity-0'
-          }`}
-          style={{ animation: isVisible ? 'spin-reverse 40s linear infinite' : 'none' }}
-        />
-      </div>
+      {/* Full-width white card with rounded corners */}
+      <div className="relative bg-white py-16 md:py-24 lg:py-32 mx-4 md:mx-8 rounded-3xl md:rounded-[48px] shadow-2xl overflow-hidden">
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div 
-          className={`text-center max-w-3xl mx-auto mb-16 transition-all duration-1000 ${
-            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-          }`}
-        >
-          <p className="section-label mb-4">Enter SAVIA</p>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white font-['Outfit'] mb-6">
-            AI That <span className="gradient-text">Never Blinks</span>
-          </h2>
-          <p className="text-lg text-[#94a3b8] leading-relaxed">
-            SAVIA — <span className="text-white font-semibold">S</span>ecure{' '}
-            <span className="text-white font-semibold">A</span>I{' '}
-            <span className="text-white font-semibold">V</span>ision &{' '}
-            <span className="text-white font-semibold">I</span>ntelligent{' '}
-            <span className="text-white font-semibold">A</span>nalytics — transforms 
-            your existing cameras into a proactive, intelligent security network. Every 
-            frame analyzed. Every anomaly caught. Every second covered.
-          </p>
+        {/* Tech grid pattern overlay */}
+        <div className="absolute inset-0 opacity-[0.03]">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `
+              linear-gradient(rgba(0,229,255,0.5) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(0,229,255,0.5) 1px, transparent 1px)
+            `,
+            backgroundSize: '60px 60px',
+          }} />
         </div>
 
-        {/* Benefits Grid */}
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
-          {benefits.map((benefit, index) => (
-            <div
-              key={benefit.title}
-              className={`glass-card p-8 rounded-2xl group transition-all duration-700 hover:scale-[1.02] ${
-                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-              }`}
-              style={{ transitionDelay: `${300 + index * 150}ms` }}
-            >
-              <div className="flex items-start gap-6">
+        {/* Animated corner accents */}
+        <div className={`absolute top-8 left-8 w-16 h-16 border-l-2 border-t-2 border-[#00e5ff]/30 transition-all duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`} />
+        <div className={`absolute top-8 right-8 w-16 h-16 border-r-2 border-t-2 border-[#00e5ff]/30 transition-all duration-1000 delay-100 ${isVisible ? 'opacity-100' : 'opacity-0'}`} />
+        <div className={`absolute bottom-8 left-8 w-16 h-16 border-l-2 border-b-2 border-[#00e5ff]/30 transition-all duration-1000 delay-200 ${isVisible ? 'opacity-100' : 'opacity-0'}`} />
+        <div className={`absolute bottom-8 right-8 w-16 h-16 border-r-2 border-b-2 border-[#00e5ff]/30 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`} />
+
+        {/* Inner content container */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          {/* Entry Badge */}
+          <div className={`flex justify-center mb-8 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#0a1018] border border-[#00e5ff]/30">
+              <div className="w-2 h-2 rounded-full bg-[#00e5ff] animate-pulse" />
+              <span className="text-xs font-mono text-[#00e5ff] tracking-widest uppercase">System Online</span>
+              <div className="w-2 h-2 rounded-full bg-[#00e5ff] animate-pulse" />
+            </div>
+          </div>
+
+          {/* Header */}
+          <div
+            className={`text-center max-w-4xl mx-auto mb-16 transition-all duration-1000 ${
+              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+          >
+            <p className="text-sm font-mono text-[#00e5ff] tracking-[0.3em] uppercase mb-4 flex items-center justify-center gap-3">
+              <span className="w-8 h-px bg-[#00e5ff]" />
+              Enter SAVIA
+              <span className="w-8 h-px bg-[#00e5ff]" />
+            </p>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#0a1018] font-['Outfit'] mb-6">
+              AI That <span className="text-[#00e5ff]">Never Blinks</span>
+            </h2>
+            <p className="text-lg text-[#64748b] leading-relaxed max-w-2xl mx-auto">
+              <span className="font-mono text-[#0a1018]">SAVIA</span> — {' '}
+              <span className="text-[#00e5ff]">S</span>ecure{' '}
+              <span className="text-[#00e5ff]">A</span>I{' '}
+              <span className="text-[#00e5ff]">V</span>ision &{' '}
+              <span className="text-[#00e5ff]">I</span>ntelligent{' '}
+              <span className="text-[#00e5ff]">A</span>nalytics — transforms
+              your existing cameras into a proactive, intelligent security network.
+            </p>
+          </div>
+
+          {/* Central AI Core Visual */}
+          <div className={`relative flex justify-center mb-16 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
+            <div className="relative">
+              {/* Outer ring */}
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-2 border-[#00e5ff]/20 flex items-center justify-center">
+                {/* Inner ring with rotation */}
+                <div className="absolute inset-2 rounded-full border border-dashed border-[#00e5ff]/30 animate-[spin_20s_linear_infinite]" />
+                {/* Core */}
+                <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-[#00e5ff]/10 to-[#00e5ff]/5 border border-[#00e5ff]/40 flex items-center justify-center">
+                  <Brain className="w-10 h-10 md:w-12 md:h-12 text-[#00e5ff]" />
+                </div>
+              </div>
+              {/* Orbiting icons */}
+              <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white border border-[#00e5ff]/30 flex items-center justify-center shadow-lg">
+                <Shield className="w-4 h-4 text-[#00e5ff]" />
+              </div>
+              <div className="absolute top-1/2 -right-2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-[#00e5ff]/30 flex items-center justify-center shadow-lg">
+                <Cpu className="w-4 h-4 text-[#00e5ff]" />
+              </div>
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white border border-[#00e5ff]/30 flex items-center justify-center shadow-lg">
+                <Eye className="w-4 h-4 text-[#00e5ff]" />
+              </div>
+              <div className="absolute top-1/2 -left-2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-[#00e5ff]/30 flex items-center justify-center shadow-lg">
+                <Radio className="w-4 h-4 text-[#00e5ff]" />
+              </div>
+            </div>
+          </div>
+
+          {/* Capabilities Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-16">
+            {capabilities.map((cap, index) => (
+              <div
+                key={cap.title}
+                className={`relative p-6 rounded-2xl bg-gradient-to-br from-[#f8fafc] to-white border border-[#e2e8f0] group transition-all duration-500 hover:border-[#00e5ff]/50 hover:shadow-xl cursor-pointer ${
+                  isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+                } ${activeIndex === index ? 'border-[#00e5ff] shadow-lg shadow-[#00e5ff]/10' : ''}`}
+                style={{ transitionDelay: `${400 + index * 100}ms` }}
+                onMouseEnter={() => setActiveIndex(index)}
+                onMouseLeave={() => setActiveIndex(null)}
+              >
+                {/* Top stat */}
+                <div className="text-center mb-4">
+                  <div className="text-3xl md:text-4xl font-bold text-[#00e5ff] font-mono">
+                    {cap.stat}
+                  </div>
+                  <div className="text-xs text-[#94a3b8] uppercase tracking-wider">
+                    {cap.statLabel}
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className="w-12 h-px bg-gradient-to-r from-transparent via-[#00e5ff]/50 to-transparent mx-auto mb-4" />
+
                 {/* Icon */}
-                <div 
-                  className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-110"
-                  style={{ backgroundColor: `${benefit.color}15` }}
-                >
-                  <benefit.icon 
-                    size={28} 
-                    style={{ color: benefit.color }}
-                    className="transition-transform group-hover:rotate-12"
-                  />
+                <div className="flex justify-center mb-3">
+                  <div className="w-12 h-12 rounded-xl bg-[#0a1018] flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <cap.icon className="w-6 h-6 text-[#00e5ff]" />
+                  </div>
                 </div>
 
                 {/* Content */}
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-white font-['Outfit'] mb-3 group-hover:text-[#00e5ff] transition-colors">
-                    {benefit.title}
-                  </h3>
-                  <p className="text-[#94a3b8] leading-relaxed">
-                    {benefit.description}
-                  </p>
-                </div>
+                <h3 className="text-lg font-bold text-[#0a1018] font-['Outfit'] text-center mb-2">
+                  {cap.title}
+                </h3>
+                <p className="text-sm text-[#64748b] text-center leading-relaxed">
+                  {cap.description}
+                </p>
 
-                {/* Check indicator */}
-                <CheckCircle 
-                  className="text-[#00e5ff] opacity-0 group-hover:opacity-100 transition-all duration-300 flex-shrink-0"
-                  size={24}
-                />
+                {/* Corner accent on hover */}
+                <div className="absolute top-2 right-2 w-3 h-3 border-t border-r border-[#00e5ff] opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-[#00e5ff] opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
+            ))}
+          </div>
 
-              {/* Hover glow */}
-              <div 
-                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                style={{
-                  background: `radial-gradient(circle at 50% 0%, ${benefit.color}10 0%, transparent 70%)`,
-                }}
-              />
+          {/* Bottom trust indicators */}
+          <div
+            className={`pt-8 border-t border-[#e2e8f0] transition-all duration-1000 delay-700 ${
+              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+          >
+            <div className="flex flex-wrap justify-center gap-6 md:gap-12">
+              {[
+                { icon: Shield, text: 'No hardware required' },
+                { icon: Eye, text: 'Works with existing cameras' },
+                { icon: Zap, text: 'Deploy in 24 hours' },
+              ].map((item) => (
+                <div key={item.text} className="flex items-center gap-3 text-[#64748b] group">
+                  <div className="w-8 h-8 rounded-lg bg-[#f8fafc] border border-[#e2e8f0] flex items-center justify-center group-hover:border-[#00e5ff]/30 transition-colors">
+                    <item.icon size={16} className="text-[#00e5ff]" />
+                  </div>
+                  <span className="text-sm font-medium">{item.text}</span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-
-        {/* Bottom trust indicators */}
-        <div 
-          className={`mt-16 flex flex-wrap justify-center gap-8 transition-all duration-1000 delay-700 ${
-            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-          }`}
-        >
-          {[
-            'No hardware required',
-            'Works with existing cameras',
-            'Deploy in 24 hours',
-          ].map((item) => (
-            <div key={item} className="flex items-center gap-2 text-[#94a3b8]">
-              <CheckCircle size={18} className="text-[#00e5ff]" />
-              <span className="text-sm">{item}</span>
-            </div>
-          ))}
+          </div>
         </div>
       </div>
-
-      <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        @keyframes spin-reverse {
-          from { transform: rotate(360deg); }
-          to { transform: rotate(0deg); }
-        }
-      `}</style>
     </section>
   );
 }
