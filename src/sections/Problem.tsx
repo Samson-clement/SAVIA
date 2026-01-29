@@ -61,9 +61,14 @@ function Counter({ end, suffix = '', prefix = '', duration = 2000, decimals = 0 
   );
 }
 
+const conclusionText = "It's that humans were never built for this.";
+
 export function Problem() {
   const [isVisible, setIsVisible] = useState(false);
+  const [typedText, setTypedText] = useState('');
+  const [conclusionVisible, setConclusionVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const conclusionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -81,6 +86,42 @@ export function Problem() {
 
     return () => observer.disconnect();
   }, []);
+
+  // Observer for conclusion box
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !conclusionVisible) {
+          setConclusionVisible(true);
+        }
+      },
+      { threshold: 0.8 }
+    );
+
+    if (conclusionRef.current) {
+      observer.observe(conclusionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [conclusionVisible]);
+
+  // Typewriter effect
+  useEffect(() => {
+    if (!conclusionVisible) return;
+
+    let currentIndex = 0;
+    const typingInterval = setInterval(() => {
+      if (currentIndex < conclusionText.length) {
+        setTypedText(conclusionText.slice(0, currentIndex + 1));
+        currentIndex++;
+      } else {
+        clearInterval(typingInterval);
+        // Keep cursor blinking after typing is done
+      }
+    }, 50);
+
+    return () => clearInterval(typingInterval);
+  }, [conclusionVisible]);
 
   const humanLimitations = [
     {
@@ -134,8 +175,12 @@ export function Problem() {
     <section
       ref={sectionRef}
       id="problem"
-      className="relative py-24 md:py-32 overflow-hidden"
+      className="relative py-24 md:py-32 overflow-hidden bg-gradient-to-b from-[#0a0608] via-[#0d0a0a] to-[#05080f]"
     >
+      {/* Red tinted background layers */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(255,107,107,0.08)_0%,_transparent_60%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(255,107,107,0.05)_0%,_transparent_50%)]" />
+
       {/* Background Effects */}
       <div className="absolute inset-0 grid-bg opacity-30" />
 
@@ -417,57 +462,21 @@ export function Problem() {
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
         >
-          {/* Decorative line */}
-          <div className="flex items-center justify-center gap-4 mb-8">
-            <div className="h-px w-20 bg-gradient-to-r from-transparent to-[#00e5ff]/50" />
-            <div className="w-2 h-2 rotate-45 border border-[#00e5ff]/50" />
-            <div className="h-px w-20 bg-gradient-to-l from-transparent to-[#00e5ff]/50" />
-          </div>
-
-          {/* Main statement container */}
-          <div className="relative max-w-3xl mx-auto">
-            {/* Background glow */}
-            <div className="absolute inset-0 bg-[#00e5ff]/5 blur-3xl rounded-full" />
-
-            <div className="relative text-center p-8 rounded-2xl border border-white/5 bg-gradient-to-b from-white/5 to-transparent">
-              {/* First line - strikethrough effect */}
-              <p className="text-xl md:text-2xl text-[#94a3b8] mb-4 relative inline-block">
-                <span className="relative">
-                  The question isn't whether your team is
-                  <span className="relative mx-2">
-                    <span className="text-white">good enough</span>
-                    <span className="absolute left-0 right-0 top-1/2 h-0.5 bg-[#ff6b6b]/70 transform -rotate-2" />
-                  </span>
-                </span>
+          {/* Tech-styled statement */}
+          <div ref={conclusionRef} className="relative max-w-xl mx-auto">
+            <div className="relative text-center p-6 rounded-lg border border-[#00e5ff]/20 bg-[#0a0f14]/80 font-mono">
+              {/* First line */}
+              <p className="text-sm md:text-base text-[#94a3b8] mb-2">
+                The problem isn't <span className="text-white">your team</span>
               </p>
 
-              {/* Second line - emphasized */}
-              <div className="relative">
-                <p className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#00e5ff]">
-                  It's whether they're even possible.
-                </p>
-
-                {/* Underline accent */}
-                <div className="mt-4 flex justify-center">
-                  <div className="h-1 w-48 bg-gradient-to-r from-transparent via-[#00e5ff] to-transparent rounded-full" />
-                </div>
-              </div>
-
-              {/* Corner accents */}
-              <div className="absolute top-0 left-0 w-8 h-8 border-l-2 border-t-2 border-[#00e5ff]/30 rounded-tl-lg" />
-              <div className="absolute top-0 right-0 w-8 h-8 border-r-2 border-t-2 border-[#00e5ff]/30 rounded-tr-lg" />
-              <div className="absolute bottom-0 left-0 w-8 h-8 border-l-2 border-b-2 border-[#00e5ff]/30 rounded-bl-lg" />
-              <div className="absolute bottom-0 right-0 w-8 h-8 border-r-2 border-b-2 border-[#00e5ff]/30 rounded-br-lg" />
+              {/* Second line - typed out */}
+              <p className="text-lg md:text-xl text-[#00e5ff] min-h-[1.75rem]">
+                {typedText}
+                {/* Blinking cursor */}
+                <span className={`inline-block w-2 h-5 bg-[#00e5ff] ml-1 align-middle ${typedText.length < conclusionText.length ? 'animate-pulse' : 'animate-[blink_1s_step-end_infinite]'}`} />
+              </p>
             </div>
-          </div>
-
-          {/* Bottom decorative element */}
-          <div className="flex items-center justify-center gap-2 mt-8">
-            <div className="w-1 h-1 rounded-full bg-[#00e5ff]/30" />
-            <div className="w-1.5 h-1.5 rounded-full bg-[#00e5ff]/50" />
-            <div className="w-2 h-2 rounded-full bg-[#00e5ff]" />
-            <div className="w-1.5 h-1.5 rounded-full bg-[#00e5ff]/50" />
-            <div className="w-1 h-1 rounded-full bg-[#00e5ff]/30" />
           </div>
         </div>
       </div>
@@ -486,6 +495,10 @@ export function Problem() {
           0%, 100% { transform: translateX(0) scale(1.02); }
           10%, 30%, 50%, 70%, 90% { transform: translateX(-2px) scale(1.02); }
           20%, 40%, 60%, 80% { transform: translateX(2px) scale(1.02); }
+        }
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
         }
         @keyframes scan {
           0% { transform: translateY(0); }
