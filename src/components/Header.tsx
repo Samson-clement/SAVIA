@@ -5,7 +5,7 @@ import saviaLogo from '../assets/savia-logo.svg';
 const navLinks = [
   { label: 'Problem', href: '#problem' },
   { label: 'Solution', href: '#solution' },
-  { label: 'Capabilities', href: '#capabilities' },
+  { label: 'Usecases', href: '#usecases' },
   { label: 'Industries', href: '#industries' },
   { label: 'Contact', href: '#contact' },
 ];

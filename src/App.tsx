@@ -2,7 +2,7 @@ import { Header } from './components/Header';
 import { Hero } from './sections/Hero';
 import { Problem } from './sections/Problem';
 import { Solution } from './sections/Solution';
-import { Capabilities } from './sections/Capabilities';
+import { Usecases } from './sections/Usecases';
 import { SmartFeatures } from './sections/SmartFeatures';
 import { Industries } from './sections/Industries';
 import { Trust } from './sections/Trust';
@@ -16,7 +16,7 @@ function App() {
         <Hero />
         <Problem />
         <Solution />
-        <Capabilities />
+        <Usecases />
         <SmartFeatures />
         <Industries />
         <Trust />
