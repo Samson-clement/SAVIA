@@ -1,3 +1,4 @@
+import { Bold } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 const headlineLines = [
@@ -289,7 +290,7 @@ export function Hero() {
             isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}
         >
-          Your cameras are watching. But who's watching your cameras?
+          Your cameras are watching. But are they <span style={{ fontWeight: 'bold', fontStyle: 'italic' }}>AI Enabled ?</span> 
         </p>
 
         {/* Main Headline */}

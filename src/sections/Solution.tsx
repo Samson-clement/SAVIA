@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Eye, Zap, TrendingDown, Clock, Shield, Brain, Cpu, Radio } from 'lucide-react';
+import { Eye, Zap, TrendingDown, Clock, Shield } from 'lucide-react';
 
 const capabilities = [
   {
@@ -117,32 +117,9 @@ export function Solution() {
             </p>
           </div>
 
-          {/* Central AI Core Visual */}
-          <div className={`relative flex justify-center mb-16 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
-            <div className="relative">
-              {/* Outer ring */}
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-2 border-[#00e5ff]/20 flex items-center justify-center">
-                {/* Inner ring with rotation */}
-                <div className="absolute inset-2 rounded-full border border-dashed border-[#00e5ff]/30 animate-[spin_20s_linear_infinite]" />
-                {/* Core */}
-                <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-[#00e5ff]/10 to-[#00e5ff]/5 border border-[#00e5ff]/40 flex items-center justify-center">
-                  <Brain className="w-10 h-10 md:w-12 md:h-12 text-[#00e5ff]" />
-                </div>
-              </div>
-              {/* Orbiting icons */}
-              <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white border border-[#00e5ff]/30 flex items-center justify-center shadow-lg">
-                <Shield className="w-4 h-4 text-[#00e5ff]" />
-              </div>
-              <div className="absolute top-1/2 -right-2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-[#00e5ff]/30 flex items-center justify-center shadow-lg">
-                <Cpu className="w-4 h-4 text-[#00e5ff]" />
-              </div>
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white border border-[#00e5ff]/30 flex items-center justify-center shadow-lg">
-                <Eye className="w-4 h-4 text-[#00e5ff]" />
-              </div>
-              <div className="absolute top-1/2 -left-2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-[#00e5ff]/30 flex items-center justify-center shadow-lg">
-                <Radio className="w-4 h-4 text-[#00e5ff]" />
-              </div>
-            </div>
+          {/* SAVIA Logo */}
+          <div className={`flex justify-center mb-16 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
+            <img src="/SAVIA Logo (SVG).svg" alt="SAVIA" className="w-48 h-48 md:w-64 md:h-64" />
           </div>
 
           {/* Capabilities Grid */}
